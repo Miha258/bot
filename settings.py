@@ -1,3 +1,4 @@
+
 import discord
 from discord.ext import commands
 import json
@@ -8,6 +9,16 @@ class Settings(commands.Cog):
    
     @commands.Cog.listener()
     async def on_guild_join(self,guild):
+        with open ('queue.json','r') as f:
+            queues = json.load(f)
+        
+        queues[str(guild.id)] = []
+        
+        
+        with open('queue.json','w') as f:
+            json.dump(queues,f,indent = 4)
+        
+        
         with open ('prefix.json','r') as f:
             prefixes = json.load(f)
         
