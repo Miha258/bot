@@ -64,19 +64,15 @@ class Music(commands.Cog):
     
     @commands.Cog.listener()
     async def on_guild_join(self,guild):
-        with open('states.json','r') as f:
-                states = json.load(f)
-
-        states[str(guild.id)] = False
 
         
         with open('loops.json','r') as f:
-                states = json.load(f)
+                loops = json.load(f)
 
-        states[str(guild.id)] = False
+        loops[str(guild.id)] = False
 
         with open('loops.json','w') as f:
-                json.dump(states,f,indent = 4)
+                json.dump(loops,f,indent = 4)
         
         with open('channels.json','r') as f:
                 channels = json.load(f)
