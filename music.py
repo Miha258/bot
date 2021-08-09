@@ -227,7 +227,7 @@ class Music(commands.Cog):
             data = await loop.run_in_executor(None,lambda: ytdl.extract_info(url,download = False))
             url = data['formats'][0]['url'] 
             player = discord.FFmpegOpusAudio(url,**ffmpeg_options)
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.5)
             if voice.is_playing() is False:
                voice.play(player)
         
