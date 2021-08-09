@@ -395,7 +395,7 @@ class Music(commands.Cog):
         else:
           
             queue = self.get_queue(ctx.guild) 
-            if len(queue) > 1:
+            if len(queue) > 5:
 
                 queue = self.get_queue(ctx.guild)
                 
@@ -447,6 +447,9 @@ class Music(commands.Cog):
                 embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
                 embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
                 embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0])[2])} - {get_track_info(queue[0])[1]}]({queue[0]})')
+                embed.set_footer(text = f'Requested by {ctx.author} | {page}/{PAGES}',icon_url = ctx.author.avatar_url)
+                if len(queue) > 1:
+                    embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue]),inline = False)
                 await ctx.send(embed = embed)
         
     @commands.command(aliases = ['skip','sk'])
