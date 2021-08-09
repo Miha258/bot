@@ -33,9 +33,6 @@ ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
 
-
-        
-    
 class Music(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
@@ -392,24 +389,65 @@ class Music(commands.Cog):
             await ctx.send(f"**:stop_button: Stopped by {ctx.author.mention}**")
   
     @commands.command(aliases = ['q','queue'])
-    async def queue_of_tracks(self,ctx):
+    async def queue_of_tracks(self,ctx,page = 1):
         if len(self.get_queue(ctx.guild)) == 0:
             await ctx.send('**:warning: Queue is empty**')
         else:
-          async with ctx.typing():
+          
             queue = self.get_queue(ctx.guild) 
-            embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
-            embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
-            embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0])[2])} - {get_track_info(queue[0])[1]}]({queue[0]})')
             if len(queue) > 1:
-                queue = " \n".join([f'[{", ".join(get_track_info(i)[2])} - {get_track_info(i)[1]}]({i})' for i in self.get_queue(ctx.guild)[1:]])
-                   
+
+                queue = self.get_queue(ctx.guild)
                 
-                embed.add_field(name = 'Tracks in queue:',value = queue,inline = False)
-        
-            embed.set_footer(text = f'Requested by {ctx.author}',icon_url = ctx.author.avatar_url)
-            await ctx.send(embed = embed)
-         
+                if (page < 1):
+                    page = 1
+                ELEMENTS_ON_PAGE = 5
+                PAGES = len(queue) // ELEMENTS_ON_PAGE
+                if (len(queue) % ELEMENTS_ON_PAGE != 0):
+                    PAGES += 1
+                def calculate_shown_goods(page, ELEMENTS_ON_PAGE = ELEMENTS_ON_PAGE):
+                    if (page > 1):
+                        START = ELEMENTS_ON_PAGE // (page - 1)
+                    elif (page == 1):
+                        START = 0
+                    STOP = START + ELEMENTS_ON_PAGE
+                    return (START, STOP)
+                START, STOP = calculate_shown_goods(page)
+                async with ctx.typing():
+                    embed = discord.Embed(description = '...',color = discord.Color.green())
+                    msg = await ctx.send(embed = embed)
+                    await msg.add_reaction('◀️')
+                    await msg.add_reaction('▶️')
+                
+                while True:
+                    embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
+                    embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
+                    embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0],False)[1])} - {get_track_info(queue[0],False)[0]}]({queue[0]})')
+                    embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue[START:STOP]]),inline = False)
+                    embed.set_footer(text = f'Requested by {ctx.author} | {page}/{PAGES}',icon_url = ctx.author.avatar_url)
+                    await msg.edit(embed = embed)
+                    
+                    
+                    try:
+                        rea, usr = await self.bot.wait_for('reaction_add', check = lambda r, u: r.message.channel == ctx.channel and u == ctx.author, timeout = 30.0)
+                        await rea.remove(usr)
+                    except asyncio.TimeoutError:
+                        await msg.delete()
+                        break
+                    else:
+                        if (str(rea.emoji) == '▶️' and page < PAGES):
+                            page += 1
+                            START, STOP = calculate_shown_goods(page)
+                        elif (str(rea.emoji) == '◀️' and page > 1):
+                            page -= 1
+                            START, STOP = calculate_shown_goods(page)
+                        
+            
+            else:
+                embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
+                embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
+                embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0])[2])} - {get_track_info(queue[0])[1]}]({queue[0]})')
+                await ctx.send(embed = embed)
         
     @commands.command(aliases = ['skip','sk'])
     async def skip_song(self,ctx,count_of_skip_tracks:int = None):

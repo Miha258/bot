@@ -79,14 +79,16 @@ def get_user_playlists(name:str):
      return zip(playlist_names,playlist_url,playlist_authors)
 
 
-
-def get_track_info(url:str):
+def get_track_info(url:str,outher_data = True):
     try:
-       spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
-       data = spotify.track(url)
-       return data['duration_ms'],data['name'],[artist['name'] for artist in data['artists']],data['album']['name'],data['album']['images'][0]['url'],data['album']['external_urls']['spotify'],data['album']['release_date']
+        spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+        data = spotify.track(url)
+        if outher_data:
+          return data['duration_ms'],data['name'],[artist['name'] for artist in data['artists']],data['album']['name'],data['album']['images'][0]['url'],data['album']['external_urls']['spotify'],data['album']['release_date']
+        return data['name'],[artist['name'] for artist in data['artists']]
     except spotipy.SpotifyException:
        raise TrackNotFound('Track not found')
+
 
 def get_playlist_info(url:str):
     try:
