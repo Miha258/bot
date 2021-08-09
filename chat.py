@@ -29,10 +29,11 @@ class Chat(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self,member):
         if self.users.count_documents({"_id": member.id}) == 0 and not member.bot:
-          self.collection.insert_one({"_id": member.id,"bef_track_id" : None})
+          self.users.insert_one({"_id": member.id,"bef_track_id" : None})
     
    
     @commands.Cog.listener()
+
     async def on_member_remove(self,member):
         if self.users.count_documents({"_id": member.id}) == 0 and not member.bot:
           self.users.delete_one({"_id": member.id})
@@ -40,13 +41,21 @@ class Chat(commands.Cog):
     
     @commands.Cog.listener()
     async def on_member_ban(self,member):
-        if self.users.count_documents({"_id": member.id}) == 1: self.users.delete_one({"_id": member.id})
+        if self.users.count_documents({"_id": member.id}) == 1:
+          self.users.delete_one({"_id": member.id})
           
     
     @commands.Cog.listener()
     async def on_guild_join(self,guild):
         async for member in guild.fetch_members():
-          if self.users.count_documents({"_id": member.id}) == 0: self.collection.insert_one({"_id": member.id,"bef_track_id" : None})
+          if self.users.count_documents({"_id": member.id}) == 0:
+            self.users.insert_one({"_id": member.id,"bef_track_id" : None})
+    
+    @commands.Cog.listener()
+    async def on_guild_join(self,guild):
+        async for member in guild.fetch_members():
+          if self.users.count_documents({"_id": member.id}) == 0:
+            self.users.insert_one({"_id": member.id,"bef_track_id" : None})
     
           
         
