@@ -207,8 +207,8 @@ class Music(commands.Cog):
           for voice in self.bot.voice_clients:
             if voice:
                 if voice.is_playing() is False and 1 < len(self.get_queue(voice.guild)) and self.get_loop_state(voice.guild) is False and voice.is_connected() and voice.is_paused() is False:
-                    url = self.queue_current_tarck(voice.guild)
                     self.queue_remove(voice.guild)
+                    url = self.queue_current_tarck(voice.guild)
                     channel = voice.guild.get_channel(self.get_current_channel(voice.guild))
                     await self.load_song(voice.guild,url)
                     await channel.send(embed = self.create_embed(get_track_info(url)[1],url,self.track_duration(get_track_info(url)[0]),get_track_info(url)[4]))
