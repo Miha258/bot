@@ -5,7 +5,7 @@ from discord.ext import commands,tasks
 import youtube_dl
 from youtube_search import YoutubeSearch
 import re
-from spotify import TrackNotFound
+from spotify import TrackNotFound   
 import json
 import asyncio
 import random
@@ -15,25 +15,19 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 
 ytdl_format_options = {
-    'format': 'bestaudio/best',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
-    'noplaylist': True,
-    'nocheckcertificate': True,
-    'ignoreerrors': False,
-    'logtostderr': False,
-    'no_warnings': True,
-    'default_search': 'auto',
-    'source_address': '0.0.0.0',
+    'format': 'bestaudio/best',
+    'extractaudio' : True,     
     'audioformat' : "mp3",
     'chachedir': False,
-    'quiet': True
+    'quiet':    True
 }
 
 ffmpeg_options = {
     "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
     'options': '-vn'
 }
+
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
@@ -64,8 +58,7 @@ class Music(commands.Cog):
     
     @commands.Cog.listener()
     async def on_guild_join(self,guild):
-
-        
+    
         with open('loops.json','r') as f:
                 loops = json.load(f)
 
@@ -81,6 +74,30 @@ class Music(commands.Cog):
 
         with open('channels.json','w') as f:
                 json.dump(channels,f,indent = 4)
+    
+    @commands.Cog.listener()
+    async def on_guild_remove(self,guild):
+        with open('loops.json','r') as f:
+                loops = json.load(f)
+
+        loops.pop(str(guild.id))
+
+        
+        with open('loops.json','w') as f:
+                json.dump(loops,f,indent = 4)
+        
+        with open('channels.json','r') as f:
+                channels = json.load(f)
+
+        channels.pop(str(guild.id))
+
+        
+        with open('channels.json','w') as f:
+                json.dump(channels,f,indent = 4)
+        
+        if len(self.get_queue(guild)) > 0:
+            self.clear_queue(guild)
+        
     
         
     def change_current_channel(self,channel:discord.TextChannel):
@@ -217,7 +234,7 @@ class Music(commands.Cog):
     async def load_song(self,guild:discord.Guild,url:str): 
         voice = discord.utils.get(self.bot.voice_clients,guild = guild)
         loop = asyncio.get_event_loop()
-        text_to_search = 'Track: ' +  ", ".join(get_track_info(url)[2]) + '-' + get_track_info(url)[1]
+        text_to_search = 'Official Music ' +  ", ".join(get_track_info(url)[2]) + '-' + get_track_info(url)[1]
         results_list = YoutubeSearch(text_to_search, max_results=1).to_dict()
         url = "https://www.youtube.com{}".format(results_list[0]['url_suffix'])
         with ytdl:
@@ -253,10 +270,12 @@ class Music(commands.Cog):
     
     @commands.command(aliases = ['p','play'])
     async def play_audio(self,ctx,url:str):
+        if ctx.author.voice is None:
+            return await ctx.send('**:x:Join to voice channel!**')
         try:
             async with ctx.typing():
                 self.insert_in_json(ctx.guild)
-            
+                
                 self.change_current_channel(ctx.channel)
                 voice = discord.utils.get(self.bot.voice_clients,guild = ctx.guild)
                 
@@ -308,10 +327,10 @@ class Music(commands.Cog):
                 duration = self.track_duration(get_track_info(new_url)[0])  
                 self.queue_add(ctx.guild,list_of_queue_tracks)
             elif re.findall('track',url):
-                duration = self.track_duration(get_track_info(url)[0])
                 await self.load_song(ctx.guild,url)
+                duration = self.track_duration(get_track_info(url)[0])
                 await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
-            
+                
 
             
     
@@ -423,8 +442,11 @@ class Music(commands.Cog):
         voice = discord.utils.get(self.bot.voice_clients, guild = ctx.guild)
         channel = ctx.author.voice.channel
         if voice is None:
-              await channel.connect()
+            try:
+              await channel.connect(timeout = 2)
               await ctx.send(f'**:white_check_mark: I connected to  {channel.mention}**')
+            except TimeoutError:
+              await ctx.send(f'**:warning: I disconnected from  {channel.mention}**')
         else:
             if voice.channel == ctx.author.voice.channel:
                 await ctx.send('**:x: I`m already connected to your channel**')
