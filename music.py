@@ -16,7 +16,7 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'format': 'bestaudio/best',
+    'format': 'bestaudio',
     'extractaudio' : True,     
     'audioformat' : "mp3",
     'chachedir': False,
