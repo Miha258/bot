@@ -110,14 +110,16 @@ def get_album_info(url:str):
     except spotipy.SpotifyException:
       raise AlbumNotFound('Album not found')
 
-def get_artist_tracks(url:str):
+def get_artist_tracks(url:str,region:str):
     try:
       spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
-      data = spotify.artist_top_tracks(url,'US')
+      data = spotify.artist_top_tracks(url,region[:2].upper())
       track_urls = [track['external_urls']['spotify'] for track in data['tracks']]
       return track_urls
     except spotipy.SpotifyException:
       raise ArtistNotFound('Artist musiclist not found')
+
+
 
 
 

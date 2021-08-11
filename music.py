@@ -297,8 +297,8 @@ class Music(commands.Cog):
                     new_url = playlist_first_track
               
                 elif re.findall('artist',url):
-                    list_of_queue_tracks = [track for track in get_artist_tracks(url)]
-                    playlist_first_track = get_artist_tracks(url)[0]
+                    list_of_queue_tracks = [track for track in get_artist_tracks(url,ctx.guild.region)]
+                    playlist_first_track = get_artist_tracks(url,ctx.guild.region)[0]
                     new_url = playlist_first_track
                 
                 else:
@@ -423,7 +423,7 @@ class Music(commands.Cog):
                     embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
                     embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
                     embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0],False)[1])} - {get_track_info(queue[0],False)[0]}]({queue[0]})')
-                    embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue[START:STOP]]),inline = False)
+                    embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue[START+1:STOP]]),inline = False)
                     embed.set_footer(text = f'Requested by {ctx.author} | {page}/{PAGES}',icon_url = ctx.author.avatar_url)
                     await msg.edit(embed = embed)
                     
@@ -539,6 +539,10 @@ class Music(commands.Cog):
             with open('queue.json','w') as f:
                 json.dump(music,f,indent = 4)
             await ctx.send('**:white_check_mark: Queue is cleared**')
+    
+    
+ 
+
         
         
 def setup(bot):
