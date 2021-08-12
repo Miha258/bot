@@ -297,8 +297,9 @@ class Music(commands.Cog):
                     new_url = playlist_first_track
               
                 elif re.findall('artist',url):
-                    list_of_queue_tracks = [track for track in get_artist_tracks(url,ctx.guild.region)]
-                    playlist_first_track = get_artist_tracks(url,ctx.guild.region)[0]
+                    region = ctx.guild.region
+                    list_of_queue_tracks = [track for track in get_artist_tracks(url,region)]
+                    playlist_first_track = get_artist_tracks(url,region)[0]
                     new_url = playlist_first_track
                 
                 else:
