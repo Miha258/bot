@@ -181,9 +181,9 @@ class Music(commands.Cog):
         with open('queue.json','r') as f:
             music = json.load(f)
          
-        list = music[str(guild.id)]
-        list.append(track) if type(track) == str else list.extend(*[track])
-        music[str(guild.id)] = list
+        tracks = music[str(guild.id)]
+        tracks.append(track) if type(track) == str else tracks.extend(*[track])
+        music[str(guild.id)] = tracks
         with open('queue.json','w') as f:
             json.dump(music,f,indent = 4)
 
@@ -216,10 +216,12 @@ class Music(commands.Cog):
         try: 
           for voice in self.bot.voice_clients:
             if voice:
-                if voice.is_playing() is False and 1 < len(self.get_queue(voice.guild)) and self.get_loop_state(voice.guild) is False and voice.is_connected() and voice.is_paused() is False:
-                    self.queue_remove(voice.guild)
-                    url = self.queue_current_tarck(voice.guild)
+                bef_queue = len(self.get_queue(voice.guild))
+                if voice.is_playing() is False and 1 < len(self.get_queue(voice.guild)) and self.get_loop_state(voice.guild) is False and voice.is_connected() and voice.is_paused() is False: 
                     channel = voice.guild.get_channel(self.get_current_channel(voice.guild))
+                    if bef_queue > 1:
+                        self.queue_remove(voice.guild)
+                    url = self.queue_current_tarck(voice.guild)
                     await self.load_song(voice.guild,url)
                     await channel.send(embed = self.create_embed(get_track_info(url)[1],url,self.track_duration(get_track_info(url)[0]),get_track_info(url)[4]))
                 elif voice.is_playing() is False and self.get_loop_state(voice.guild) and voice.is_paused() is False:
@@ -298,9 +300,10 @@ class Music(commands.Cog):
               
                 elif re.findall('artist',url):
                     region = ctx.guild.region
+                    
                     list_of_queue_tracks = [track for track in get_artist_tracks(url,region)]
-                    playlist_first_track = get_artist_tracks(url,region)[0]
-                    new_url = playlist_first_track
+                    
+                    new_url = list_of_queue_tracks[0]
                 
                 else:
                   if not re.findall('track',url):
@@ -322,8 +325,9 @@ class Music(commands.Cog):
         else:
             self.channel = ctx.channel
             if list_of_queue_tracks:
-                duration = self.track_duration(get_track_info(new_url)[0])  
                 self.queue_add(ctx.guild,list_of_queue_tracks)
+                duration = self.track_duration(get_track_info(new_url)[0])  
+                
             elif re.findall('track',url):
                 await self.load_song(ctx.guild,url)
                 duration = self.track_duration(get_track_info(url)[0])
