@@ -326,7 +326,8 @@ class Music(commands.Cog):
                 await self.load_song(ctx.guild,new_url)
                 self.queue_add(ctx.guild,list_of_queue_tracks)
                 duration = self.track_duration(get_track_info(new_url)[0])  
-                
+                await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
+            
             elif re.findall('track',url):
                 await self.load_song(ctx.guild,url)
                 duration = self.track_duration(get_track_info(url)[0])
@@ -399,15 +400,15 @@ class Music(commands.Cog):
         else:
           
             queue = self.get_queue(ctx.guild) 
-            if len(queue) > 5:
+            if len(queue-1) > 5:
 
                 queue = self.get_queue(ctx.guild)
                 
                 if (page < 1):
                     page = 1
                 ELEMENTS_ON_PAGE = 5
-                PAGES = len(queue) // ELEMENTS_ON_PAGE
-                if (len(queue) % ELEMENTS_ON_PAGE != 0):
+                PAGES = len(queue-1) // ELEMENTS_ON_PAGE
+                if (len(queue-1) % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
                 def calculate_shown_goods(page, ELEMENTS_ON_PAGE = ELEMENTS_ON_PAGE):
                     if (page > 1):
