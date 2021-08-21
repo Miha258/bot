@@ -389,7 +389,7 @@ class Music(commands.Cog):
                 await self.load_song(ctx.guild,new_url)
                 self.queue_add(ctx.guild,list_of_queue_tracks)
                 duration = self.track_duration(get_track_info(new_url)[0])  
-                await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
+                await ctx.send(embed = self.create_embed(get_track_info(new_url)[1],new_url,duration,get_track_info(new_url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
             
 	        
             elif re.findall('playlist',url):
