@@ -1,6 +1,5 @@
 
 import io
-from os import name
 import discord
 import pymongo
 import requests
@@ -18,13 +17,25 @@ class Chat(commands.Cog):
         self.db = self.cluster["songs"]
         self.collection = self.db["songs"]
         self.users = self.db["users"]
-    
+      
     @commands.Cog.listener()
     async def on_ready(self):
+     
       async for guild in self.bot.fetch_guilds():
         async for member in guild.fetch_members():
           if self.users.count_documents({"_id": member.id}) == 0 and not member.bot:
             self.users.insert_one({"_id": member.id,"bef_track_id" : None})
+        
+        
+        with open('embeds_channel.json','r') as f:
+                channels = json.load(f)
+
+        
+        if guild.id not in channels.values():
+            channels[str(guild.id)] = None
+
+            with open('embeds_channel.json','w') as f:
+                json.dump(channels,f,indent = 4)
 
     @commands.Cog.listener()
     async def on_member_join(self,member):
@@ -33,7 +44,6 @@ class Chat(commands.Cog):
     
    
     @commands.Cog.listener()
-
     async def on_member_remove(self,member):
         if self.users.count_documents({"_id": member.id}) == 0 and not member.bot:
           self.users.delete_one({"_id": member.id})
@@ -58,12 +68,14 @@ class Chat(commands.Cog):
             self.users.insert_one({"_id": member.id,"bef_track_id" : None})
     
           
-        
     @commands.Cog.listener()
     async def on_member_update(self,before,after):
         if discord.activity.Spotify in list(map(type,after.activities)):
+          
           af_activ = after.activity if len(after.activities) < 2 or len(after.activities) < 3 else list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
+          print(self.users.find_one({"_id": after.id})["bef_track_id"],af_activ.track_id)
           if self.users.find_one({"_id": after.id})["bef_track_id"] != af_activ.track_id or self.users.find_one({"_id": after.id})["bef_track_id"] is None:
+            print(1)
             self.users.update_one({"_id": after.id},{"$set":{"bef_track_id" : str(af_activ.track_id)}})
             spot = af_activ
             avatar = Image.open(requests.get(spot.album_cover_url, stream=True).raw).convert('RGBA')
@@ -91,23 +103,23 @@ class Chat(commands.Cog):
             with open('embeds_channel.json','r') as f:
               guilds = [guild for guild in self.bot.guilds if after in guild.members]
               guilds_channels = json.load(f)
-            
+          
             
             for guild in guilds:
+             
               _buffer = io.BytesIO()
               spotify.save(_buffer,"png")
               _buffer.seek(0)
               channel_id = guilds_channels[str(guild.id)]
               if channel_id is not None:
                 channel = discord.utils.get(guild.channels,id = channel_id)
+                print(channel)
                 await channel.send(file = discord.File(fp = _buffer,filename = f'spotify-{guild.id}.png'))
                 self.collection.insert_one({"_id": af_activ.track_id,"song_auditions" : 1,"title" : af_activ.title,"guild_id" : after.guild.id,"authors" : af_activ.artists}) if self.collection.count_documents({"_id": af_activ.track_id}) == 0 else self.collection.update_one({"_id": af_activ.track_id},{"$inc":{"song_auditions" : 1}})
 
 
       
-              
-                            
-                  
+                          
     @commands.command()
     async def toptracks(self,ctx):
         embed = discord.Embed(color = discord.Color.green())

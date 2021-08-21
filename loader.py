@@ -22,7 +22,7 @@ for file in os.listdir('./'):
 
 @bot.event
 async def on_ready():
-    print('Im ready')
+    print('I`m ready')
 
 @bot.command()
 async def ping(ctx):

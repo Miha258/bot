@@ -16,7 +16,7 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'format': 'bestaudio/best',
+    'format': 'bestaudio',
     'extractaudio' : True,     
     'audioformat' : "mp3",
     'chachedir': False,
@@ -40,7 +40,48 @@ class Music(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        self.play_loop.start()
+        if not self.play_loop.is_running():
+            self.play_loop.start()
+        
+        async for guild in self.bot.fetch_guilds():
+            with open('loops.json','r') as f:
+                loops = json.load(f)
+    
+            if guild.id not in loops.values():
+                loops[str(guild.id)] = '$'
+
+                with open('loops.json','w') as f:
+                    json.dump(loops,f,indent = 4)
+            
+            
+            with open('queue.json','r') as f:
+                queue = json.load(f)
+    
+            if guild.id not in queue.values():
+                queue[str(guild.id)] = []
+
+                with open('queue.json','w') as f:
+                    json.dump(queue,f,indent = 4)
+            
+
+            with open('channels.json','r') as f:
+                channels = json.load(f)
+    
+            if guild.id not in channels.values():
+                channels[str(guild.id)] = None
+
+                with open('channels.json','w') as f:
+                    json.dump(channels,f,indent = 4)
+            
+
+            with open('loops.json','r') as f:
+                loops = json.load(f)
+    
+            if guild.id not in loops.values():
+                loops[str(guild.id)] = False
+
+                with open('loops.json','w') as f:
+                    json.dump(loops,f,indent = 4)
 
     
     @commands.Cog.listener()
@@ -71,6 +112,14 @@ class Music(commands.Cog):
 
         with open('channels.json','w') as f:
                 json.dump(channels,f,indent = 4)
+        
+        with open('queue.json','r') as f:
+            queue = json.load(f)
+    
+        queue[str(guild.id)] = []
+
+        with open('queue.json','w') as f:
+            json.dump(queue,f,indent = 4)
     
     @commands.Cog.listener()
     async def on_guild_remove(self,guild):
@@ -91,6 +140,17 @@ class Music(commands.Cog):
         
         with open('channels.json','w') as f:
                 json.dump(channels,f,indent = 4)
+        
+        
+        with open('queue.json','r') as f:
+            queue = json.load(f)
+    
+        
+        queue.pop(str(guild.id))
+
+        
+        with open('queue.json','w') as f:
+            json.dump(queue,f,indent = 4)
         
         if len(self.get_queue(guild)) > 0:
             self.clear_queue(guild)
@@ -216,9 +276,12 @@ class Music(commands.Cog):
         try: 
           for voice in self.bot.voice_clients:
             if voice:
+                bef_queue = len(self.get_queue(voice.guild))
                 if voice.is_playing() is False and 1 < len(self.get_queue(voice.guild)) and self.get_loop_state(voice.guild) is False and voice.is_connected() and voice.is_paused() is False: 
                     channel = voice.guild.get_channel(self.get_current_channel(voice.guild))
-                    self.queue_remove(voice.guild)
+                    print(bef_queue)
+                    if bef_queue > 0:
+                        self.queue_remove(voice.guild)
                     url = self.queue_current_tarck(voice.guild)
                     await self.load_song(voice.guild,url)
                     await channel.send(embed = self.create_embed(get_track_info(url)[1],url,self.track_duration(get_track_info(url)[0]),get_track_info(url)[4]))
@@ -323,12 +386,13 @@ class Music(commands.Cog):
         else:
             self.channel = ctx.channel
             if list_of_queue_tracks:
-                await self.load_song(ctx.guild,new_url)
+                self.load_song(ctx.guild,new_url)
                 self.queue_add(ctx.guild,list_of_queue_tracks)
                 duration = self.track_duration(get_track_info(new_url)[0])  
                 await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
             
-            elif re.findall('track',url):
+	        
+            elif re.findall('playlist',url):
                 await self.load_song(ctx.guild,url)
                 duration = self.track_duration(get_track_info(url)[0])
                 await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
@@ -400,10 +464,7 @@ class Music(commands.Cog):
         else:
           
             queue = self.get_queue(ctx.guild) 
-            if len(queue-1) > 5:
-
-                queue = self.get_queue(ctx.guild)
-                
+            if len(queue - 1) > 5:
                 if (page < 1):
                     page = 1
                 ELEMENTS_ON_PAGE = 5

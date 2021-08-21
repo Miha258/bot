@@ -3,22 +3,49 @@ import discord
 from discord.ext import commands
 import json
 
+from pymongo import settings
+
 class Settings(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
    
     @commands.Cog.listener()
+    async def on_ready(self):
+        async for guild in self.bot.fetch_guilds():
+            with open('prefix.json','r') as f:
+                prefix = json.load(f)
+        
+            if guild.id not in prefix.values():
+                prefix[str(guild.id)] = '$'
+                
+                with open('prefix.json','w') as f:
+                        json.dump(prefix,f,indent = 4)
+            
+            with open('embeds_channel.json','r') as f:
+                channels = json.load(f)
+        
+            if guild.id not in channels.values():
+                channels[str(guild.id)] = None
+                
+                with open('embeds_channel.json','w') as f:
+                        json.dump(channels,f,indent = 4)
+
+            
+            with open('settings.json','r') as f:
+                settings = json.load(f)
+        
+            if guild.id not in settings.values():
+                
+                settings[str(guild.id)] = {
+                    "delete_msg": False,
+                    "send_embeds": False
+                }
+                
+                with open('settings.json','w') as f:
+                        json.dump(settings,f,indent = 4)
+
+    @commands.Cog.listener()
     async def on_guild_join(self,guild):
-        with open ('queue.json','r') as f:
-            queues = json.load(f)
-        
-        queues[str(guild.id)] = []
-        
-        
-        with open('queue.json','w') as f:
-            json.dump(queues,f,indent = 4)
-        
-        
         with open ('prefix.json','r') as f:
             prefixes = json.load(f)
         
@@ -96,12 +123,13 @@ class Settings(commands.Cog):
         setting = settings[str(ctx.guild.id)]
         if setting['delete_msg']:
             setting['delete_msg'] = False
-            await ctx.send(':white_check_mark:Message delete enabled')
+            await ctx.send('**:white_check_mark: Message delete disabled**')
         elif not setting['delete_msg']:
             setting['delete_msg'] = True
-            await ctx.send(':white_check_mark:Message delete disabled')
+            await ctx.send('**:white_check_mark: Message delete enabled**')
+          
         settings[str(ctx.guild.id)] = setting
-        with open('settings.json','w') as f:
+        with open('settings.json','w') as f: 
             json.dump(settings,f,indent = 4)
     
     @commands.command()
