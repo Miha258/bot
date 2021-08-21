@@ -1,5 +1,6 @@
 
 from typing import Union
+from PIL.Image import new
 import discord
 from discord.ext import commands,tasks
 import youtube_dl
@@ -271,7 +272,7 @@ class Music(commands.Cog):
         return int(hours),int(minutes),int(seconds)
 
     
-    @tasks.loop()
+    @tasks.loop(seconds = 0.55)
     async def play_loop(self):
         try: 
           for voice in self.bot.voice_clients:
@@ -463,13 +464,15 @@ class Music(commands.Cog):
             await ctx.send('**:warning: Queue is empty**')
         else:
           
-            queue = len(self.get_queue(ctx.guild)) - 1
-            if queue > 5:
+            queue_lenth = len(self.get_queue(ctx.guild)) - 1
+            queue = self.get_queue(ctx.guild)
+            if queue_lenth > 5:
                 if (page < 1):
                     page = 1
+                
                 ELEMENTS_ON_PAGE = 12
-                PAGES = queue // ELEMENTS_ON_PAGE
-                if (queue  % ELEMENTS_ON_PAGE != 0):
+                PAGES = queue_lenth // ELEMENTS_ON_PAGE
+                if (queue_lenth  % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
                 def calculate_shown_goods(page, ELEMENTS_ON_PAGE = ELEMENTS_ON_PAGE):
                     if (page > 1):
@@ -486,7 +489,7 @@ class Music(commands.Cog):
                     await msg.add_reaction('▶️')
                 
                 while True:
-                    embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
+                    embed = discord.Embed(description = f'In queue: ``{queue_lenth}`` {" tracks" if 0 < queue_lenth > 1 else " track"}',color = discord.Color.green())
                     embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
                     embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0],False)[1])} - {get_track_info(queue[0],False)[0]}]({queue[0]})')
                     embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue[START+1:STOP]]),inline = False)
@@ -508,13 +511,13 @@ class Music(commands.Cog):
                             page -= 1
                             START, STOP = calculate_shown_goods(page)
                         
-            
+        
             else:
-                embed = discord.Embed(description = f'In queue: ``{len(queue) - 1}`` {" tracks" if 0 < len(queue) - 1 > 1 else " track"}',color = discord.Color.green())
+                embed = discord.Embed(description = f'In queue: ``{queue_lenth}`` {" tracks" if 0 < queue_lenth > 1 else " track"}',color = discord.Color.green())
                 embed.set_author(name = f'Queue | {ctx.guild.name} ',icon_url = ctx.guild.icon_url)
                 embed.add_field(name = 'Now playing:',value = f'[{", ".join(get_track_info(queue[0])[2])} - {get_track_info(queue[0])[1]}]({queue[0]})')
                 embed.set_footer(text = f'Requested by {ctx.author}',icon_url = ctx.author.avatar_url)
-                if len(queue) > 1:
+                if queue_lenth:
                     embed.add_field(name = 'Tracks in queue:',value = " \n".join([f'[{", ".join(get_track_info(i,False)[1])} - {get_track_info(i,False)[0]}]({i})' for i in queue]),inline = False)
                 await ctx.send(embed = embed)
         
