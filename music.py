@@ -271,7 +271,7 @@ class Music(commands.Cog):
         return int(hours),int(minutes),int(seconds)
 
     
-    @tasks.loop(seconds = 0.55)
+    @tasks.loop()
     async def play_loop(self):
         try: 
           for voice in self.bot.voice_clients:
@@ -386,7 +386,7 @@ class Music(commands.Cog):
         else:
             self.channel = ctx.channel
             if list_of_queue_tracks:
-                self.load_song(ctx.guild,new_url)
+                await self.load_song(ctx.guild,new_url)
                 self.queue_add(ctx.guild,list_of_queue_tracks)
                 duration = self.track_duration(get_track_info(new_url)[0])  
                 await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
