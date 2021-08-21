@@ -73,7 +73,6 @@ class Chat(commands.Cog):
         if discord.activity.Spotify in list(map(type,after.activities)):
           
           af_activ = after.activity if len(after.activities) < 2 or len(after.activities) < 3 else list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
-          print(self.users.find_one({"_id": after.id})["bef_track_id"],af_activ.track_id)
           if self.users.find_one({"_id": after.id})["bef_track_id"] != af_activ.track_id or self.users.find_one({"_id": after.id})["bef_track_id"] is None:
             print(1)
             self.users.update_one({"_id": after.id},{"$set":{"bef_track_id" : str(af_activ.track_id)}})
@@ -113,7 +112,7 @@ class Chat(commands.Cog):
               channel_id = guilds_channels[str(guild.id)]
               if channel_id is not None:
                 channel = discord.utils.get(guild.channels,id = channel_id)
-                print(channel)
+                
                 await channel.send(file = discord.File(fp = _buffer,filename = f'spotify-{guild.id}.png'))
                 self.collection.insert_one({"_id": af_activ.track_id,"song_auditions" : 1,"title" : af_activ.title,"guild_id" : after.guild.id,"authors" : af_activ.artists}) if self.collection.count_documents({"_id": af_activ.track_id}) == 0 else self.collection.update_one({"_id": af_activ.track_id},{"$inc":{"song_auditions" : 1}})
 
