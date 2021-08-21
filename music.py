@@ -469,7 +469,7 @@ class Music(commands.Cog):
                     page = 1
                 ELEMENTS_ON_PAGE = 12
                 PAGES = queue // ELEMENTS_ON_PAGE
-                if queue  % ELEMENTS_ON_PAGE != 0):
+                if (queue  % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
                 def calculate_shown_goods(page, ELEMENTS_ON_PAGE = ELEMENTS_ON_PAGE):
                     if (page > 1):
