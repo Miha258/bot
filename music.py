@@ -464,12 +464,12 @@ class Music(commands.Cog):
         else:
           
             queue = self.get_queue(ctx.guild) 
-            if len(queue - 1) > 5:
+            if len(queue) - 1 > 5:
                 if (page < 1):
                     page = 1
                 ELEMENTS_ON_PAGE = 5
-                PAGES = len(queue-1) // ELEMENTS_ON_PAGE
-                if (len(queue-1) % ELEMENTS_ON_PAGE != 0):
+                PAGES = len(queue) - 1 // ELEMENTS_ON_PAGE
+                if (len(queue) - 1) % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
                 def calculate_shown_goods(page, ELEMENTS_ON_PAGE = ELEMENTS_ON_PAGE):
                     if (page > 1):
