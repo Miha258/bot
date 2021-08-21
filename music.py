@@ -271,7 +271,7 @@ class Music(commands.Cog):
         return int(hours),int(minutes),int(seconds)
 
     
-    @tasks.loop()
+    @tasks.loop(seconds = 0.55)
     async def play_loop(self):
         try: 
           for voice in self.bot.voice_clients:
