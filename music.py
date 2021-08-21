@@ -467,7 +467,7 @@ class Music(commands.Cog):
             if len(queue) - 1 > 5:
                 if (page < 1):
                     page = 1
-                ELEMENTS_ON_PAGE = 5
+                ELEMENTS_ON_PAGE = 12
                 PAGES = len(queue) - 1 // ELEMENTS_ON_PAGE
                 if (len(queue) - 1 % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
