@@ -72,7 +72,8 @@ class Chat(commands.Cog):
     async def on_member_update(self,before,after):
         if discord.activity.Spotify in list(map(type,after.activities)):
           
-          af_activ = after.activity if len(after.activities) < 2 or len(after.activities) < 3 else list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
+          #af_activ = after.activity if len(after.activities) < 2 or len(after.activities) < 3 else list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
+          af_activ = list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
           if self.users.find_one({"_id": after.id})["bef_track_id"] != af_activ.track_id or self.users.find_one({"_id": after.id})["bef_track_id"] is None:
             self.users.update_one({"_id": after.id},{"$set":{"bef_track_id" : str(af_activ.track_id)}})
             spot = af_activ
