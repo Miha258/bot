@@ -317,7 +317,6 @@ class Music(commands.Cog):
      
         time = '00:00:00' if int(h) > 0 else '00:00'
         duration = f'{h}:{m}:{s}' if int(h) else f'{m}:{s}'
-    
         text = 'Authors' if len(get_track_info(url)[2]) > 1 else 'Author'
         embed = discord.Embed(title = f'Now playing \"{name}\"',description = f'`{time}\{duration}`',url = url,color = discord.Color.green())
         embed.set_thumbnail(url = image)
@@ -458,6 +457,7 @@ class Music(commands.Cog):
                 self.change_loop_state(ctx.guild,False)
             await ctx.send(f"**:stop_button: Stopped by {ctx.author.mention}**")
   
+    
     @commands.command(aliases = ['q','queue'])
     async def queue_of_tracks(self,ctx,page = 1):
         if len(self.get_queue(ctx.guild)) == 0:
@@ -470,7 +470,7 @@ class Music(commands.Cog):
                 if (page < 1):
                     page = 1
                 
-                ELEMENTS_ON_PAGE = 12
+                ELEMENTS_ON_PAGE = 8
                 PAGES = queue_lenth // ELEMENTS_ON_PAGE
                 if (queue_lenth  % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1
