@@ -359,7 +359,7 @@ class Music(commands.Cog):
                     playlist_first_track = list(get_playlist_info(url)[0])[0][0][:53]
                     new_url = playlist_first_track
               
-                elif re.findall('track',url):
+                elif re.findall('artist',url):
                     region = ctx.guild.region
                     
                     list_of_queue_tracks = [track for track in get_artist_tracks(url,region)]
@@ -392,7 +392,7 @@ class Music(commands.Cog):
                 await ctx.send(embed = self.create_embed(get_track_info(new_url)[1],new_url,duration,get_track_info(new_url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
             
 	        
-            elif re.findall('playlist',url):
+            elif re.findall('track',url):
                 await self.load_song(ctx.guild,url)
                 duration = self.track_duration(get_track_info(url)[0])
                 await ctx.send(embed = self.create_embed(get_track_info(url)[1],url,duration,get_track_info(url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
