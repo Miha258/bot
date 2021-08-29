@@ -1,6 +1,7 @@
 
 import io
 import discord
+from discord import activity
 import pymongo
 import requests
 from discord.ext import commands
@@ -50,10 +51,14 @@ class Chat(commands.Cog):
       
     
     @commands.Cog.listener()
-    async def on_member_ban(self,member):
+    async def on_member_ban(self,guild, member):
         if self.users.count_documents({"_id": member.id}) == 1:
           self.users.delete_one({"_id": member.id})
-          
+    
+    @commands.Cog.listener()
+    async def on_member_unban(self,guild, member):
+        if self.users.count_documents({"_id": member.id}) == 0:
+          self.users.insert_one({"_id": member.id,"bef_track_id" : None})
     
     @commands.Cog.listener()
     async def on_guild_join(self,guild):
@@ -72,49 +77,50 @@ class Chat(commands.Cog):
     async def on_member_update(self,before,after):
         if discord.activity.Spotify in list(map(type,after.activities)):
           
-          #af_activ = after.activity if len(after.activities) < 2 or len(after.activities) < 3 else list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
           af_activ = list(filter(lambda act:type(act) == discord.activity.Spotify,after.activities))[0]
-          if self.users.find_one({"_id": after.id})["bef_track_id"] != af_activ.track_id or self.users.find_one({"_id": after.id})["bef_track_id"] is None:
-            self.users.update_one({"_id": after.id},{"$set":{"bef_track_id" : str(af_activ.track_id)}})
-            spot = af_activ
-            avatar = Image.open(requests.get(spot.album_cover_url, stream=True).raw).convert('RGBA')
-            spotify = Image.open(requests.get('https://cdn.discordapp.com/attachments/815640791652499486/821070476909477928/Spotify.PNG', stream=True).raw).convert('RGBA')
-            avatar = avatar.resize((450,450))
-            mask = Image.new('L',(1500,1500),0)
-            draw = ImageDraw.Draw(mask)
-            idraw = ImageDraw.Draw(spotify)
-            headline = ImageFont.truetype("font.ttf", size=70)
-            headline2 = ImageFont.truetype('font.ttf', size=40)
-            idraw.text((570, 50), f'Track', font=headline2, fill='#FFFFFF')
-            idraw.text((570, 110), f'{spot.title if len(spot.title) < 27 else spot.title[:27] + "..."}', font=headline, fill='#FFFFFF')
-            idraw.text((570, 210), f'Album', font=headline2, fill='#FFFFFF')
-            idraw.text((570, 270), f'{spot.album if len(spot.album) < 27 else spot.album[:27] + "..."}', font=headline, fill='#FFFFFF')
-            idraw.text((570, 370), f'Author:{spot.artist}' if len(spot.artists) == 1 else f'Authors: {", ".join(spot.artists)[:35] if len(", ".join(spot.artists)) < 35 else ", ".join(spot.artists)[:35] + "..."}',font=headline2,fill='#A7A7A7')
-            idraw.text((570, 470), f"{spot.created_at}" [:-15], font=headline2, fill='#FFFFFF')
-            idraw.text((570, 570), f"Listener: {after}",font=headline2, fill='#FFFFFF')
-            draw.ellipse((0,0) + (1500,1500),fill = 255)
-            spotify = spotify.resize((1920,640))
-            spotify.paste(avatar,(50,50),avatar)
-           
-          
+          if self.users.count_documents({"_id": after.id}) == 0:
+            self.users.insert_one({"_id": after.id,"bef_track_id" : None})
+          else:
+            if self.users.find_one({"_id": after.id})["bef_track_id"] != af_activ.track_id or self.users.find_one({"_id": after.id})["bef_track_id"] is None:
+              self.users.update_one({"_id": after.id},{"$set":{"bef_track_id" : str(af_activ.track_id)}})
+              spot = af_activ
+              avatar = Image.open(requests.get(spot.album_cover_url, stream=True).raw).convert('RGBA')
+              spotify = Image.open(requests.get('https://cdn.discordapp.com/attachments/815640791652499486/821070476909477928/Spotify.PNG', stream=True).raw).convert('RGBA')
+              avatar = avatar.resize((450,450))
+              mask = Image.new('L',(1500,1500),0)
+              draw = ImageDraw.Draw(mask)
+              idraw = ImageDraw.Draw(spotify)
+              headline = ImageFont.truetype("font.ttf", size=70)
+              headline2 = ImageFont.truetype('font.ttf', size=40)
+              idraw.text((570, 50), f'Track', font=headline2, fill='#FFFFFF')
+              idraw.text((570, 110), f'{spot.title if len(spot.title) < 27 else spot.title[:27] + "..."}', font=headline, fill='#FFFFFF')
+              idraw.text((570, 210), f'Album', font=headline2, fill='#FFFFFF')
+              idraw.text((570, 270), f'{spot.album if len(spot.album) < 27 else spot.album[:27] + "..."}', font=headline, fill='#FFFFFF')
+              idraw.text((570, 370), f'Author:{spot.artist}' if len(spot.artists) == 1 else f'Authors: {", ".join(spot.artists)[:35] if len(", ".join(spot.artists)) < 35 else ", ".join(spot.artists)[:35] + "..."}',font=headline2,fill='#A7A7A7')
+              idraw.text((570, 470), f"{spot.created_at}" [:-15], font=headline2, fill='#FFFFFF')
+              idraw.text((570, 570), f"Listener: {after}",font=headline2, fill='#FFFFFF')
+              draw.ellipse((0,0) + (1500,1500),fill = 255)
+              spotify = spotify.resize((1920,640))
+              spotify.paste(avatar,(50,50),avatar)
             
             
-            with open('embeds_channel.json','r') as f:
-              guilds = [guild for guild in self.bot.guilds if after in guild.members]
-              guilds_channels = json.load(f)
-          
+              
+              
+              with open('embeds_channel.json','r') as f:
+                guilds = [guild for guild in self.bot.guilds if after in guild.members]
+                guilds_channels = json.load(f)
             
-            for guild in guilds:
-             
-              _buffer = io.BytesIO()
-              spotify.save(_buffer,"png")
-              _buffer.seek(0)
-              channel_id = guilds_channels[str(guild.id)]
-              if channel_id is not None:
-                channel = discord.utils.get(guild.channels,id = channel_id)
-                
-                await channel.send(file = discord.File(fp = _buffer,filename = f'spotify-{guild.id}.png'))
-                self.collection.insert_one({"_id": af_activ.track_id,"song_auditions" : 1,"title" : af_activ.title,"guild_id" : after.guild.id,"authors" : af_activ.artists}) if self.collection.count_documents({"_id": af_activ.track_id}) == 0 else self.collection.update_one({"_id": af_activ.track_id},{"$inc":{"song_auditions" : 1}})
+              
+              for guild in guilds:
+              
+                _buffer = io.BytesIO()
+                spotify.save(_buffer,"png")
+                _buffer.seek(0)
+                channel_id = guilds_channels[str(guild.id)]
+                if channel_id is not None:
+                  channel = discord.utils.get(guild.channels,id = channel_id)
+                  await channel.send(file = discord.File(fp = _buffer,filename = f'spotify-{guild.id}.png'))
+                  self.collection.insert_one({"_id": af_activ.track_id,"song_auditions" : 1,"title" : af_activ.title,"guild_id" : after.guild.id,"authors" : af_activ.artists}) if self.collection.count_documents({"_id": af_activ.track_id}) == 0 else self.collection.update_one({"_id": af_activ.track_id},{"$inc":{"song_auditions" : 1}})
 
 
       
@@ -146,7 +152,7 @@ class Chat(commands.Cog):
         embed.set_footer(text=f'Requested by: {ctx.author}', icon_url=ctx.author.avatar_url)
         await ctx.send(embed = embed)
       except TrackNotFound:
-        await ctx.send('**:x:Tracks not found**')
+        await ctx.send('**:x: Tracks not found**')
 
 
     @commands.command()
@@ -169,7 +175,7 @@ class Chat(commands.Cog):
         await ctx.send(embed = embed)
       
       except ArtistNotFound:
-        await ctx.send('**:x:Artist not found**')
+        await ctx.send('**:x: Artist not found**')
 
      
     @commands.command()
@@ -184,7 +190,7 @@ class Chat(commands.Cog):
         embed.set_footer(text=f'Requested by: {ctx.author}', icon_url=ctx.author.avatar_url)
         await ctx.send(embed = embed)
       except PlayListNotFound:
-        await ctx.send('**:x:Playlist not found**')
+        await ctx.send('**:x: Playlist not found**')
     
     @commands.command()
     async def searchalbums(self,ctx,*,name:str):
