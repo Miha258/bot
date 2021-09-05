@@ -22,6 +22,7 @@ for file in os.listdir('./'):
 
 @bot.event
 async def on_ready():
+    print(len(bot.guilds))
     print('I`m ready')
 
 @bot.command()

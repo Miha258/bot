@@ -5,6 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import requests
 
+auth_token = spotipy.oauth2.SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f").get_access_token(False)
+
+
 
 
 class ArtistNotFound(Exception): pass
@@ -16,7 +19,7 @@ class PlayListNotFound(Exception): pass
 class AlbumNotFound(Exception): pass
 
 def tracks(name:str):
-   sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+   sp = spotipy.Spotify(auth=auth_token)
    results = sp.search(q=name,type='track')
    track_names = [ track['name'] for track in results['tracks']['items'] ]
    track_urls = [ track['external_urls']['spotify'] for track in results['tracks']['items'] ]
@@ -27,7 +30,7 @@ def tracks(name:str):
    return zip(track_names,track_urls,autors)
 
 def albums(name:str):
-   sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+   sp = spotipy.Spotify(auth=auth_token)
    results = sp.search(q=name,type='album')
    album_names = [ track['name'] for track in results['tracks']['items'] ]
    album_urls = [ track['external_urls']['spotify'] for track in results['tracks']['items'] ]
@@ -38,7 +41,7 @@ def albums(name:str):
    return zip(album_urls,album_names,autors)
 
 def artist(name:str):
-  spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+  spotify = spotipy.Spotify(auth=auth_token)
   if len(sys.argv) > 1:
     name = ' '.join(sys.argv[1:])
   
@@ -68,8 +71,7 @@ def artist(name:str):
   return zip(most_popular_tracks,track_urls),artist['followers']['total'],artist['images'][0]['url'],artist['genres'],artist['external_urls']['spotify'],artist['name'],get_auditions(artist['id'])
 
 def get_user_playlists(name:str):
-     auth_manager = SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f")
-     sp = spotipy.Spotify(auth_manager=auth_manager)
+     sp = spotipy.Spotify(auth=auth_token)
      if len(sys.argv) > 1:
        name = ' '.join(sys.argv[1:])
      result = sp.search(q=name, type='playlist')['playlists']['items']
@@ -81,18 +83,19 @@ def get_user_playlists(name:str):
 
 def get_track_info(url:str,outher_data = True):
     try:
-        spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+        spotify = spotipy.Spotify(auth=auth_token)
         data = spotify.track(url)
         if outher_data:
           return data['duration_ms'],data['name'],[artist['name'] for artist in data['artists']],data['album']['name'],data['album']['images'][0]['url'],data['album']['external_urls']['spotify'],data['album']['release_date']
-        return data['name'],[artist['name'] for artist in data['artists']]
+        else:
+          return data['name'],[artist['name'] for artist in data['artists']]
     except spotipy.SpotifyException:
        raise TrackNotFound('Track not found')
 
 
 def get_playlist_info(url:str):
     try:
-      spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+      spotify = spotipy.Spotify(client_credentials_manager=auth_manager,auth=auth_token)
       data = spotify.playlist(url)
       track_urls = [track['track']['external_urls']['spotify'] for track in data['tracks']['items']]
       track_names = [track['track']['name'] for track in data['tracks']['items']]
@@ -102,7 +105,7 @@ def get_playlist_info(url:str):
 
 def get_album_info(url:str):
     try:
-      spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
+      spotify = spotipy.Spotify(auth=auth_token)
       data = spotify.album(url)
       track_urls = [track['external_urls']['spotify'] for track in data['tracks']['items']]
       track_names = [track['name'] for track in data['tracks']['items']]
@@ -110,15 +113,16 @@ def get_album_info(url:str):
     except spotipy.SpotifyException:
       raise AlbumNotFound('Album not found')
 
+
 def get_artist_tracks(url:str,region:str):
     try:
-      spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials(client_id="a1bba52790704d4d8d1c5ece8ea930a5",client_secret="bd96ff5a603140f38c0ee349fca6ff2f"))
-      
+      spotify = spotipy.Spotify(auth=auth_token)
       data = spotify.artist_top_tracks(url,str(region)[:2].upper())
       track_urls = [track['external_urls']['spotify'] for track in data['tracks']]
       return track_urls
     except spotipy.SpotifyException:
       raise ArtistNotFound('Artist musiclist not found')
+
 
 
 

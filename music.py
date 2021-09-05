@@ -1,8 +1,9 @@
 
+from asyncio.events import AbstractEventLoop
 from typing import Union
-from PIL.Image import new
 import discord
 from discord.ext import commands,tasks
+from discord.player import PCMAudio, PCMVolumeTransformer
 import youtube_dl
 from youtube_search import YoutubeSearch
 import re
@@ -15,12 +16,14 @@ from spotify import *
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 
+
+
 ytdl_format_options = {
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'format': 'bestaudio',
     'extractaudio' : True,     
     'audioformat' : "mp3",
-    'chachedir': False,
+    'cachedir': False,
     'quiet':    True
 }
 
@@ -31,7 +34,9 @@ ffmpeg_options = {
 
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-
+    
+    
+       
 
 
 class Music(commands.Cog):
@@ -305,7 +310,8 @@ class Music(commands.Cog):
             await asyncio.sleep(0.5)
             if voice.is_playing() is False:
                voice.play(player)
-        
+      
+      
     
    
     
@@ -317,6 +323,7 @@ class Music(commands.Cog):
      
         time = '00:00:00' if int(h) > 0 else '00:00'
         duration = f'{h}:{m}:{s}' if int(h) else f'{m}:{s}'
+    
         text = 'Authors' if len(get_track_info(url)[2]) > 1 else 'Author'
         embed = discord.Embed(title = f'Now playing \"{name}\"',description = f'`{time}\{duration}`',url = url,color = discord.Color.green())
         embed.set_thumbnail(url = image)
@@ -457,7 +464,6 @@ class Music(commands.Cog):
                 self.change_loop_state(ctx.guild,False)
             await ctx.send(f"**:stop_button: Stopped by {ctx.author.mention}**")
   
-    
     @commands.command(aliases = ['q','queue'])
     async def queue_of_tracks(self,ctx,page = 1):
         if len(self.get_queue(ctx.guild)) == 0:
@@ -470,7 +476,7 @@ class Music(commands.Cog):
                 if (page < 1):
                     page = 1
                 
-                ELEMENTS_ON_PAGE = 8
+                ELEMENTS_ON_PAGE = 12
                 PAGES = queue_lenth // ELEMENTS_ON_PAGE
                 if (queue_lenth  % ELEMENTS_ON_PAGE != 0):
                     PAGES += 1

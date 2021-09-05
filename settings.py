@@ -4,6 +4,10 @@ from discord.ext import commands
 import json
 
 
+
+
+
+
 class Settings(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
@@ -11,11 +15,10 @@ class Settings(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self,ctx,error):
-        if isinstance(error,discord.ext.commands.MissingPermissions([discord.Permissions.administrator,discord.Permissions.manage_messages])):  
+        if isinstance(error,discord.ext.commands.MissingPermissions):  
             await ctx.send('**:warning: You don`t have enough permisions**')
     
-    
-    
+
     @commands.Cog.listener()
     async def on_ready(self):
         async for guild in self.bot.fetch_guilds():
