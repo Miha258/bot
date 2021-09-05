@@ -368,9 +368,7 @@ class Music(commands.Cog):
               
                 elif re.findall('artist',url):
                     region = ctx.guild.region
-                    
                     list_of_queue_tracks = [track for track in get_artist_tracks(url,region)]
-                    
                     new_url = list_of_queue_tracks[0]
                 
                 else:
@@ -396,7 +394,8 @@ class Music(commands.Cog):
                 await self.load_song(ctx.guild,new_url)
                 self.queue_add(ctx.guild,list_of_queue_tracks)
                 duration = self.track_duration(get_track_info(new_url)[0])  
-                await ctx.send(embed = self.create_embed(get_track_info(new_url)[1],new_url,duration,get_track_info(new_url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
+                if not voice.is_playing():
+                    await ctx.send(embed = self.create_embed(get_track_info(new_url)[1],new_url,duration,get_track_info(new_url)[4],requester = ctx.author,icon = ctx.author.avatar_url))
             
 	        
             elif re.findall('track',url):
