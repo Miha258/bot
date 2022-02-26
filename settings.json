@@ -1,102 +1,212 @@
 {
-    "832242755728179200": {
+    "681597501299621889": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
     "767855039787302922": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "831101986475868170": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "831235345076584528": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "831235986146328589": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "832242755728179200": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
     "868435127527690250": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "656599172073521152": {
+    "694994318468841542": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "761771403698503730": {
+    "760074535608516610": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "798655812947279892": {
+    "848198096882237460": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "814148358474039377": {
+    "893800127121199144": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "826158314790060042": {
+    "900754133030694963": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "837912964127522826": {
+    "901572749561049098": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "852906379387469884": {
+    "902539433147003002": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "854175531800854549": {
+    "902859328158048326": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "865287204581146654": {
+    "903167931360358450": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "868401421907812382": {
+    "904759361564446731": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "870708480816865290": {
+    "904763785280122950": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "871285989375631381": {
+    "904809072791015465": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "871406430933110805": {
+    "905174796579536967": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "872808529508073508": {
+    "905189876218073089": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874383863793745980": {
+    "905378890359406632": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874513111514750986": {
+    "905388653633740841": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874608598498545664": {
+    "905723112769863721": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874665238052626494": {
+    "905983936419741756": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874702726133600378": {
+    "889562592446672926": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "874735457085304863": {
+    "791469783999709184": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "875464677616943124": {
+    "790556101476352030": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     },
-    "876800899689897995": {
+    "593822330631749644": {
         "delete_msg": false,
-        "send_embeds": false
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "656599495009763371": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "701908235590041680": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "908813037467746375": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "911010298167717938": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "621138534949978122": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
+    },
+    "520969171467632650": {
+        "delete_msg": false,
+        "send_embeds": false,
+        "effect": null,
+        "blacklist": []
     }
 }

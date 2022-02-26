@@ -1,0 +1,22 @@
+{
+    "title": ":information_source: Info about Spotichat update",
+    "description": "Join to discord Spotichat server - https://discord.gg/QtYA9dNruz",
+    "color": 1953325,
+    "fields": [
+        {
+            "name": "``New in bot``",
+            "value": "**Spotichat appended slash commands.To use it kick and invite bot by this [url](https://discord.com/oauth2/authorize?client_id=792310226938101779&permissions=2150639680&scope=bot%20applications.commands)**"
+        }
+    ],
+    "footer": {
+        "text": "by miha#5438",
+        "icon_url": "https://cdn.discordapp.com/avatars/395599480537219073/c56a87654994d695db43c17fc487cf93.png?size=32"
+    }
+}
+
+
+
+
+
+
+
