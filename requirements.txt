@@ -7,6 +7,6 @@ youtube_dl==2021.12.17
 spotipy==2.19.0
 beautifulsoup4==4.10.0
 dnspython==2.2.0
-relativedelta==2.8.2
+python-dateutil==2.8.2
 lyricsgenius==3.0.1
 validators==0.11.2
