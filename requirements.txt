@@ -9,3 +9,4 @@ beautifulsoup4==4.10.0
 dnspython==2.2.0
 relativedelta==2.8.2
 lyricsgenius 3.0.1
+validators==0.11.2
