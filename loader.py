@@ -313,7 +313,7 @@ async def searchartists_slash(ctx,*,name:str):
     await c.searchartist(c,ctx = ctx,name = name)
 
     
-bot.run('NzYxMjA0NTA1NTI1NjE2NjQ4.X3XM8A.4d64lshb3kQgFxUC6Jzt1UbFsl8')
+bot.run('NzkyMzEwMjI2OTM4MTAxNzc5.X-b2Zg.G3nvxdPFGdCzBkBqyw3uFJaHy1c')
 
 
 
