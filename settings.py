@@ -2,7 +2,6 @@ import pymongo
 import nextcord
 from nextcord.ext import commands
 import json
-import ssl
 
 
 
@@ -12,7 +11,7 @@ import ssl
 class Settings(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
-        self.cluster = pymongo.MongoClient("mongodb+srv://tEST:sAHmVYepRa3YoW3J@cluster0.zlpox.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",ssl_cert_reqs=ssl.CERT_NONE)
+        self.cluster = pymongo.MongoClient("mongodb+srv://tEST:sAHmVYepRa3YoW3J@cluster0.zlpox.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         self.db = self.cluster["songs"]
         self.premium_users = self.db["premium_users"]
       
